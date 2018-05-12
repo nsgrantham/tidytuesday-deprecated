@@ -2,7 +2,6 @@
 #  2018-05-08  | Neal Grantham (@nsgrantham)
 library(tidyverse)
 library(readxl)
-library(geofacet)
 theme_set(theme_minimal())
 
 chains <- "data/week6_coffee_chains.xlsx"
