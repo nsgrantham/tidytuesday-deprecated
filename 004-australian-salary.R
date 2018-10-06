@@ -4,7 +4,7 @@ library(tidyverse)
 library(ggrepel)
 theme_set(theme_minimal())
 
-salary <- read_csv("data/week4_australian_salary.csv") %>%
+salary <- read_csv("data/2018-04-23/week4_australian_salary.csv") %>%
   select(-one_of("X1", "gender_rank")) %>%
   separate(occupation, into = "occupation", sep = ";", extra = "drop") %>%
   mutate(occupation = str_replace_all(occupation, "\x96", "-")) %>%
@@ -24,9 +24,9 @@ workforce <- salary %>%
   select(-average_taxable_income) %>%
   spread(gender, individuals, fill = 0) %>%
   rename(m_workforce = Male, f_workforce = Female) %>% 
-  transform(mf_workforce_ratio = m_workforce / f_workforce) %>%
-  transform(mf_workforce_category = cut(mf_workforce_ratio, breaks = ratio_breaks, 
-                                        labels = ratio_labels, include.lowest = TRUE))
+  mutate(mf_workforce_ratio = m_workforce / f_workforce,
+         mf_workforce_category = cut(mf_workforce_ratio, breaks = ratio_breaks, 
+                                     labels = ratio_labels, include.lowest = TRUE))
 
 df <- workforce %>% 
   left_join(income, by = "occupation") %>%
@@ -34,8 +34,8 @@ df <- workforce %>%
   mutate(occupation = replace(occupation, f_income < 110000 & m_income < 175000, NA))
 
 df %>%
-    select(mf_workforce_category) %>%
-    summary()  # how many counts in each workforce category?
+  select(mf_workforce_category) %>%
+  summary()  # how many counts in each workforce category?
 
 # darkturquoise to white to darkorange
 palette <- c("#00ced1", "#85dfe0", "#c6efef", "#ffffff", "#ffe3bd", "#ffc574", "#ffa500")
@@ -48,10 +48,10 @@ ggplot(df, aes(m_income, f_income)) +
        x = "Average taxable income among men (AUD)", 
        y = "Average taxable income among women (AUD)",
        caption = "Source: data.gov.au | Graphic: @nsgrantham") +
-  scale_fill_manual(name = "", values = palette) +
+  scale_fill_manual(name = NULL, values = palette) +
   scale_x_continuous(labels = scales::dollar, breaks = seq(0, 1000000, by = 100000)) + 
   scale_y_continuous(labels = scales::dollar, breaks = seq(0, 1000000, by = 100000)) + 
   coord_cartesian(xlim = c(0, 610000)) +
   theme(legend.position = c(0.16, 0.843))
 
-ggsave("004-australian-salary/004-australian-salary.png", width = 9, height = 7)
+ggsave("plots/004-australian-salary.png", width = 9, height = 7)

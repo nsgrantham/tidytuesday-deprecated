@@ -6,7 +6,7 @@ theme_set(theme_minimal())
 
 percent <- " [(]%[)]"  # the '[]'s tell regex to leave '(' and ')' alone
 sdi_levels <- c("High", "High-middle", "Middle", "Low-middle", "Low")
-mortality <- read_xlsx("data/global_mortality.xlsx") %>%
+mortality <- read_xlsx("data/2018-04-16/global_mortality.xlsx") %>%
   filter(str_detect(country, "SDI")) %>%
   rename(sociodemographic_index = country) %>%
   mutate(sociodemographic_index = sub(" SDI", "", sociodemographic_index)) %>%
@@ -49,4 +49,4 @@ ggplot(mortality, aes(year, deaths_per_1k, color = sociodemographic_index)) +
         axis.text = element_text(size = 7), panel.grid.major.y = element_blank(),
         panel.grid.minor.y = element_blank(), panel.grid.minor.x = element_blank())
 
-ggsave("003-global-mortality.png", width = 12, height = 8)
+ggsave("plots/003-global-mortality.png", width = 12, height = 8)

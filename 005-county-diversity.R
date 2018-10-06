@@ -4,11 +4,11 @@ library(tidyverse)
 library(geofacet)
 theme_set(theme_minimal())
 
-acs <- read_csv("data/acs2015_county_data.csv") %>%
+acs <- read_csv("data/2018-04-30/acs2015_county_data.csv") %>%
   select(CensusId, County, State, Hispanic, White, Black, Native, Asian, Pacific) %>%
-  transform(Other = 100 - Hispanic - White - Black - Native - Asian - Pacific) %>%
-  mutate(Other = replace(Other, Other < 0, 0)) %>%
-  transform(TotalPercent = Hispanic + White + Black + Native + Asian + Pacific + Other) %>%
+  mutate(Other = 100 - Hispanic - White - Black - Native - Asian - Pacific,
+         Other = replace(Other, Other < 0, 0),
+         TotalPercent = Hispanic + White + Black + Native + Asian + Pacific + Other) %>%
   mutate_at(vars(Hispanic, White, Black, Native, Asian, Pacific, Other), funs(100 * (. / TotalPercent))) %>%
   mutate(CensusId = fct_reorder(factor(CensusId), White, .desc = TRUE)) %>%
   gather(Race, PercentPop, Hispanic, White, Black, Native, Asian, Pacific, Other) %>%
@@ -38,4 +38,4 @@ ggplot(acs, aes(CensusId, PercentPop, fill = Race)) +
         strip.text.x = element_text(size = 7), axis.text.y = element_text(size=6),
         axis.text.x = element_blank(), panel.grid = element_blank())
 
-ggsave("005-county-diversity/005-county-diversity.png", width = 11, height = 8)
+ggsave("plots/005-county-diversity.png", width = 11, height = 8)
